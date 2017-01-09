@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>shell</title>
+	<link rel="stylesheet" type="text/css" href={{static_url('css/bootstrap.min.css')}}">
+	<link href="{{static_url('css/dashborad.css')}}" rel="stylesheet">
+	<link rel="stylesheet" href="{{static_url('css/zTreeStyle/zTreeStyle.css')}}" type="text/css">
+
+  <script type="text/javascript" src="{{static_url('js/jquery-3.1.1.min.js')}}"></script>
+  <script type="text/javascript" src="{{static_url('js/jquery.ztree.core.js')}}"></script>
+  <script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
+  <script type="text/javascript" src="{{static_url('net.js')}}"></script>
+
+
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+
+          <a class="navbar-brand" href="#">XSS-exploit-platform</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li><p>Hook browser</p></li>
+           </ul>
+		       <ul id="tree" class="ztree" style="width:230px; overflow:auto;"></ul>
+		    </div>
+
+        <div class="col-md-8 col-md-offset-2" id="browser_info">
+
+          <ul id="myTab" class="nav nav-tabs">
+            <li class="active">
+            <a href="#information" data-toggle="tab">信息</a>
+            </li>
+
+            <li><a href="#command" data-toggle="tab">命令</a></li>
+          </ul>
+
+<div id="myTabContent" class="tab-content">
+
+  <div class="tab-pane fade " id="command">
+    <textarea id="cmd"></textarea>
+    <button id="cmd_button">执行命令</button>
+  </div>
+
+  <div class="tab-pane fade in active" id="information">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Information</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>IP</td>
+                  <td id="ip"></td>
+                </tr>
+                <tr>
+                  <td>User-agent</td>
+                  <td id="ua"></td>
+                </tr>
+                <tr>
+                  <td>hook_id</td>
+                  <td id="hook_id"></td>
+                </tr>  
+                <tr>
+                  <td>Browser_version</td>
+                  <td id="browser_version"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-8 ">
+            <h5><b>Network Map</b></h5>
+            <canvas id="net_map" width="800" height="800"></canvas>
+          </div>
+        </div>
+      </div>
+
+  </div>
+</div>
+
+
+</body>
+</html>

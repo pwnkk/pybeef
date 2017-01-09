@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>xss login</title>
+	<style>
+        #xss-logo {        
+            margin-left:420px; 
+            width:300px;
+        }
+	</style>
+    <link href="{{static_url("css/bootstrap.min.css")}}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{static_url("css/signin.css")}}" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+
+		<img id="xss-logo" src="{{static_url("img/xss.png")}}" alt="xss exploit" />
+
+        <div id="login">
+        <form class="form-signin" action="/shell" method="post">
+            <input class="form-control" type="text" name="username" placeholder="username" required autofocus="beef">
+            <input class="form-control" type="password" name="passwd" placeholder="password" required>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        </form>
+        </div>
+    </div>
+
+</body>
+</html>
