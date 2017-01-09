@@ -50,12 +50,7 @@ class Application(tornado.web.Application):
         }
         
 #        database_init()
-
-#        client = pymongo.MongoClient("mongodb://localhost:27017")
-
-
         tornado.web.Application.__init__(self,handlers,**setting)
-
 
 define("port", default=8000, help="run on the given port", type=int)
 
@@ -91,9 +86,6 @@ class LoginPageHandler(tornado.web.RequestHandler):
         if self.get_secure_cookie('su_cookie')==acount_info()[0]:
             self.render('shell.html')
 
-# when we use get method to the shell.html ,check the cookie and give the
-# correct answer
-#    def get(self):
 
 class EchoWebSocket(tornado.websocket.WebSocketHandler):
     def open(self):
@@ -108,16 +100,6 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler):
     def check_origin(self,origin):
         return True
 
-# learn ui module
-'''
-class HelloModule(tornado.web.UIModule):
-    def render(self):
-        return '<h1>Hello,World!</h1>'
-
-class HelloHanlder(tornado.web.RequestHandler):
-    def get(self):
-        self.render("hello.html")
-'''
 #for firefox cross orign cookie set bug 
 class SetCookieHandler(tornado.web.RequestHandler):
     def get(self):
