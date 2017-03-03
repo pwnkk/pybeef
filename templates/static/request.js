@@ -76,7 +76,7 @@ else{
 */
 
 
-setInterval('Makerequest("http://172.16.224.1:8000/poll")',8000);
+setInterval('Makerequest("http://192.168.1.144:8000/poll")',8000);
 //Makerequest("http://localhost:8000/poll?hook_id="+hook_id);
 
 
