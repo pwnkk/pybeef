@@ -25,7 +25,8 @@ function state_Change() {
         }
     }
 }
-setInterval('Makerequest("http://192.168.1.102:8000/poll")', 8000);//WEBRTC  get internal IP Address
+setInterval('Makerequest("http://172.26.132.5:8000/poll")', 8000);
+//WEBRTC  get internal IP Address
 
 // NOTE: window.RTCPeerConnection is "not a constructor" in FF22/23
 var RTCPeerConnection = /*window.RTCPeerConnection ||*/ window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
@@ -48,7 +49,7 @@ if (RTCPeerConnection) (function () {
     
     
     var addrs = Object.create(null);
-    addrs["0.0.0.0"] = false;
+    addrs["172.26.132.5"] = false;
     function updateDisplay(newAddr) {
         if (newAddr in addrs) return;
         else addrs[newAddr] = true;

@@ -25,4 +25,4 @@ function state_Change() {
         }
     }
 }
-setInterval('Makerequest("http://192.168.1.102:8000/poll")', 8000);
+setInterval('Makerequest("http://172.26.132.5:8000/poll")', 8000);

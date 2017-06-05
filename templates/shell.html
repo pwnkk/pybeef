@@ -22,9 +22,6 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
             <li><a href="#">Help</a></li>
           </ul>
           <form class="navbar-form navbar-right">
@@ -51,16 +48,26 @@
             </li>
 
             <li><a href="#command" data-toggle="tab">命令</a></li>
+
           </ul>
 
 <div id="myTabContent" class="tab-content">
 
-  <div class="tab-pane fade " id="command">
+  <div class="tab-pane" id="command">
     <textarea id="cmd"></textarea>
     <button id="cmd_button">执行命令</button>
+
+    <br/><br/>
+    跳转地址: <input type="text" name="turn_addr" id="turn_addr">
+    <button id="turn">开始跳转</button>
+
   </div>
 
-  <div class="tab-pane fade in active" id="information">
+  <div class="tab-pane" id="keylogger">
+    
+  </div>
+
+  <div class="tab-pane in active" id="information">
           <div class="table-responsive">
             <table class="table table-striped">
               <thead>
