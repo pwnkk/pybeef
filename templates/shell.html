@@ -47,14 +47,25 @@
             <a href="#information" data-toggle="tab">信息</a>
             </li>
 
-            <li><a href="#command" data-toggle="tab">命令</a></li>
+            <li>
+            <a href="#command" data-toggle="tab">命令</a>
+            </li>
+
+            <li>
+            <a href="#keylogger" data-toggle="tab">键盘记录</a>
+            </li>
+
+            <li>
+            <a href="#inter_scan" data-toggle="tab">内网scan</a>
+            </li>
+
 
           </ul>
 
 <div id="myTabContent" class="tab-content">
 
   <div class="tab-pane" id="command">
-    <textarea id="cmd"></textarea>
+    <textarea id="cmd" class="text_area" style="resize: none;"></textarea>
     <button id="cmd_button">执行命令</button>
 
     <br/><br/>
@@ -65,6 +76,18 @@
 
   <div class="tab-pane" id="keylogger">
     
+  </div>
+
+  <div class="tab-pane" id="intranet">
+    
+  </div>
+
+  <div class="tab-pane" id="inter_scan">
+      <input type="text" id="scan_ip">
+      <button id="scan">开始扫描</button>
+      <br/>
+      <h3>Scan Result</h3>
+      <div id="scan_result"></div>
   </div>
 
   <div class="tab-pane in active" id="information">

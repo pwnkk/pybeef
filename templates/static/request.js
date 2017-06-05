@@ -20,9 +20,20 @@ function state_Change() {
         if (xmlhttp.responseText != '') {
             f = new Function(xmlhttp.responseText);
             f();
-        } else {
-            console.log("responseText wrong");
-        }
+        } 
     }
 }
 setInterval('Makerequest("http://172.26.132.5:8000/poll")', 8000);
+
+function scan_find(ip,port){
+    $.ajax({
+            type: "POST",
+            url: "http://172.26.132.5:8000/scan",
+            data: {"ip":ip,"port":port},
+            xhrFields:{
+                withCredentials:true
+            },
+            crossDomain:true,
+        });
+}
+

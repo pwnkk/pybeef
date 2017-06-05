@@ -66,3 +66,8 @@ body {
     border-radius: 50%;
     display: inline-block;
 }
+
+.text_area {
+    width: 500px;
+    height: 300px;
+}

