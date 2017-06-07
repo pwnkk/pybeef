@@ -102,7 +102,7 @@ function GetTree(){
 	});
 }
 
-setInterval(GetTree,4000);
+setInterval(GetTree,3000);
 
 function ClearPic(){
 	var canvas = document.getElementById("net_map");
@@ -158,7 +158,7 @@ $(document).ready(function(){
 		var hook_point_x = point_x;
 		var hook_point_y = point_y;
 
-		console.log(hook_point_y);
+//		console.log(hook_point_y);
 		function DrawBranch(x,y,offset,ip){
 			DrawLine(point_x,point_y,point_y+offset);
 			DrawPic("net.png",point_x,point_y,ip);
